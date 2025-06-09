@@ -16,16 +16,19 @@ sns.set_palette(vsp_palette)
 plt.rcParams['axes.prop_cycle'] = plt.cycler(color=vsp_palette)
 
 
-# --- CARGA DE DATOS ---
+# --- SUBIR ARCHIVO ---
+st.title("📤 Cargar archivo CSV de VSP")
 
-st.title("Upload your VSP data")
+uploaded_file = st.file_uploader("Selecciona tu archivo CSV", type="csv")
 
-uploaded_file = st.file_uploader("Choose your CSV file", type="csv")
+if uploaded_file is None:
+    st.warning("Por favor, sube un archivo para continuar.")
+    st.stop()
 
-if uploaded_file is not None:
-    data_vsp = pd.read_csv(uploaded_file)
-    st.success("File loaded successfully!")
 
+# --- SI HAY ARCHIVO, CARGA EL DASHBOARD ---
+data_vsp = pd.read_csv(uploaded_file)
+st.success("✅ Archivo cargado correctamente.")
 
 
 # --- CARGA DE DATOS ---
