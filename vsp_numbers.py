@@ -5,13 +5,26 @@ import seaborn as sns
 from utils.data_loader import load_data
 
 
-
 # --- CONFIGURACIÓN GENERAL ---
 st.set_page_config(
     page_title="VSP en números",
     page_icon="📊",
     layout="wide"
 )
+
+
+st.title("📊 VSP Numbers Dashboard")
+
+# Load data
+with st.spinner("Loading and cleaning data..."):
+    df = load_data(sheet_name="Planning_Tracker_VSP", worksheet_name="Transferencias")
+
+st.success("Data loaded successfully!")
+
+# Display preview
+st.dataframe(df.head())
+
+
 
 # Paleta de colores
 vsp_palette = ["#8E9DC8", "#C56F54", "#72846F", "#6F4E89", "#E0B664"]

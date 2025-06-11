@@ -37,6 +37,7 @@ def load_data(sheet_name: str, worksheet_name: str) -> pd.DataFrame:
         'Mes C/P', 'Año C/P', 'Mes I/G', 'Año I/G', 'Fecha evento', 'Cliente',
         'Tipo Actividad', 'comprobar duplicados','Fecha Grafico'], axis=1, inplace=True)
     data_vsp.columns = data_vsp.columns.str.lower()
+    data_vsp = data_vsp[data_vsp["año"] != 1899]
     data_vsp = data_vsp.rename(columns={
         'valor ( + ) / ( - )': 'cantidad',
         'f. operativa': 'fecha',
