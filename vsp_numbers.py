@@ -2,6 +2,9 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from utils.data_loader import load_data
+
+
 
 # --- CONFIGURACIÓN GENERAL ---
 st.set_page_config(
@@ -15,24 +18,26 @@ vsp_palette = ["#8E9DC8", "#C56F54", "#72846F", "#6F4E89", "#E0B664"]
 sns.set_palette(vsp_palette)
 plt.rcParams['axes.prop_cycle'] = plt.cycler(color=vsp_palette)
 
-
-# --- SUBIR ARCHIVO ---
-st.title("📤 Cargar archivo CSV de VSP")
-
-uploaded_file = st.file_uploader("Selecciona tu archivo CSV", type="csv")
-
-if uploaded_file is None:
-    st.warning("Por favor, sube un archivo para continuar.")
-    st.stop()
+# --- SUBIR ARCHIVO LOCAL---
+data_vsp = pd.read_csv("data/data_vsp_final.csv")
 
 
-# --- SI HAY ARCHIVO, CARGA EL DASHBOARD ---
-data_vsp = pd.read_csv(uploaded_file)
-st.success("✅ Archivo cargado correctamente.")
+# --- SUBIR ARCHIVO ONLINE---
+# st.title("📤 Cargar archivo CSV de VSP")
+
+# uploaded_file = st.file_uploader("Selecciona tu archivo CSV", type="csv")
+
+# if uploaded_file is None:
+#     st.warning("Por favor, sube un archivo para continuar.")
+#     st.stop()
+
+
+# data_vsp = pd.read_csv(uploaded_file)
+# st.success("✅ Archivo cargado correctamente.")
 
 
 # --- CARGA DE DATOS ---
-# data_vsp = pd.read_csv("data/data_vsp_final.csv")
+data_vsp = pd.read_csv("data/data_vsp_final.csv")
 
 orden_meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
                "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
