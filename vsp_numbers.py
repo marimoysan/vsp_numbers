@@ -5,6 +5,8 @@ import seaborn as sns
 from utils.data_loader import load_data
 from vsp_palette import vsp_palette
 import time
+import random
+from auth import login
 
 # --- CONFIGURACIÓN GENERAL ---
 st.set_page_config(
@@ -13,9 +15,39 @@ st.set_page_config(
     layout="wide"
 )
 sns.set_palette(vsp_palette)
+
 plt.rcParams['axes.prop_cycle'] = plt.cycler(color=vsp_palette)
 orden_meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
                "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+
+success_messages = [
+    "Hostia Marco, menudo currazo estás haciendo",
+    "Ya veo ya, ya verás que esto va a dar sus frutos",
+    "Los números dan vértigo pero ya verás que triunfas",
+    "Ese Marco como mola se merece una olaaaa",
+    "Suuuuuma y sigue sube sale la pasta cogelaaaaa",
+    "Marco, esto va a petarlo, no hay quien te pare",
+    "Cada línea que metes es un paso al éxito, crack",
+    "Dale duro, que esto no es más que el principio",
+    "Menuda bestia, así se hacen las cosas en serio",
+    "Sigue así Marco, que la cima está a la vuelta",
+    "Este curro va a ser leyenda, y tú el protagonista",
+    "No paras, eres una máquina imparable, tío",
+    "Vamos Marco, que el éxito te está llamando a gritos",
+    "Esto está cogiendo forma, ¡qué pasada!",
+    "Marco, cada dato que subes es un golazo",
+    "Tío, así se construyen imperios, paso a paso",
+    "Que no decaiga, que aquí queda mucho por petar",
+    "Los números bailan a tu ritmo, crack total",
+    "Marco, estás dejando huella, ¡a tope!",
+    "Sigue así y pronto te van a llamar leyenda del curro"
+]
+
+
+# Ejecutar login antes de mostrar la app
+if not login():
+    st.stop()
+
 
 # --- SUBIR ARCHIVO LOCAL---
 # data_vsp = pd.read_csv("data/data_vsp_final.csv")
@@ -25,7 +57,7 @@ orden_meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
 success_placeholder = st.empty()
 with st.spinner("Cargando muchos meses de curro..."):
     data_vsp = load_data(sheet_name="Planning_Tracker_VSP", worksheet_name="Transferencias")
-success_placeholder.success("Listo!")
+success_placeholder.success(random.choice(success_messages))
 time.sleep(3)
 success_placeholder.empty()
 
