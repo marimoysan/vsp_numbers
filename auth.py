@@ -14,6 +14,7 @@ def login():
         if st.button("Let's go"):
             if password_input == PASSWORD:
                 st.session_state.authenticated = True
+                st.experimental_rerun()
             else:
                 st.error("Contraseña incorrecta")
         return False
