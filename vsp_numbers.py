@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from utils.data_loader import load_data
+from utils.data_loader import load_finance_data
 from vsp_palette import vsp_palette
 import time
 import random
@@ -56,7 +56,7 @@ if not login():
 # --- SINCRONIZACIÓN CON GOOGLE SHEETS ---
 success_placeholder = st.empty()
 with st.spinner("Cargando muchos meses de curro..."):
-    data_vsp = load_data(sheet_name="Planning_Tracker_VSP", worksheet_name="Transferencias")
+    data_vsp = load_finance_data(sheet_name="Planning_Tracker_VSP", worksheet_name="Transferencias")
 success_placeholder.success(random.choice(success_messages))
 time.sleep(3)
 success_placeholder.empty()
