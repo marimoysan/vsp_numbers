@@ -23,7 +23,7 @@ orden_meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
 success_placeholder = st.empty()
 with st.spinner("Cargando muchos meses de curro..."):
     data_servicios_vsp = load_service_data(sheet_name="Planning_Tracker_VSP", worksheet_name="Eventos")
-success_placeholder.success("Aquí estan todos los eventos!")
+success_placeholder.success("Vamos a echarle un ojo a nuestros clientes...")
 time.sleep(3)
 success_placeholder.empty()
 
@@ -108,29 +108,37 @@ with col2:
 
 st.divider()
 # # Segunda fila as
-# Fila completa para el gráfico vertical por cliente
 st.markdown("### Cobros, Pagos y Margen por Cliente VSP")
 df_servicios["margen"] = df_servicios["cobros"] + df_servicios["pagos"]
 
+# Agrupar y preparar datos
+cliente_summary = df_servicios.groupby('cliente_vsp').agg({
+    'cobros': 'sum',
+    'pagos': 'sum',
+    'margen': 'sum',
+    'fecha_evento': 'count'  # o cualquier columna para contar eventos
+}).rename(columns={'fecha_evento': 'num_eventos'})
 
-# --- Agrupar y preparar datos ---
-cliente_summary = df_servicios.groupby('cliente_vsp')[['cobros', 'pagos', 'margen']].sum()
-
-# Ordenar por margen descendente (de mayor a menor)
+cliente_summary["margen_medio"] = cliente_summary["margen"] / cliente_summary["num_eventos"]
 cliente_summary = cliente_summary.sort_values(by='margen', ascending=False)
 
-# --- Checkboxes para seleccionar qué mostrar ---
+
+# Checkboxes para seleccionar qué mostrar
 show_cobros = st.checkbox("Cobros", value=True)
 show_pagos = st.checkbox("Pagos", value=True)
 show_margen = st.checkbox("Margen", value=True)
+show_margen_evento = st.checkbox("Margen por Evento", value=False)
+show_total_eventos = st.checkbox("Número total de eventos por cliente", value=False)
 
-
-# --- Determinar columnas seleccionadas ---
+# Columnas seleccionadas para el gráfico
 categorias = []
 colores = []
 if show_margen:
     categorias.append('margen')
     colores.append(vsp_palette[2])
+if show_margen_evento:
+    categorias.append('margen_medio')
+    colores.append(vsp_palette[3])
 if show_cobros:
     categorias.append('cobros')
     colores.append(vsp_palette[0])
@@ -138,10 +146,8 @@ if show_pagos:
     categorias.append('pagos')
     colores.append(vsp_palette[1])
 
-
-# --- Mostrar gráfico si hay algo seleccionado ---
 if categorias:
-    fig, ax = plt.subplots(figsize=(14, 6))  # Ancho grande para fila completa
+    fig, ax = plt.subplots(figsize=(14, 6))
 
     cliente_summary[categorias].plot(
         kind='bar',
@@ -157,7 +163,7 @@ if categorias:
     ax.tick_params(axis='x', rotation=45, labelsize=11)
     ax.tick_params(axis='y', labelsize=11)
 
-    # Añadir anotaciones solo para margen (si está seleccionado)
+    # Anotaciones para margen
     if show_margen:
         for p in ax.patches:
             if p.get_facecolor() == (0, 0, 0, 1):  # Negro = margen
@@ -167,7 +173,27 @@ if categorias:
                     y = p.get_y() + height
                     ax.text(x, y + 100, f'{height:,.0f} €', ha='center', va='bottom', fontsize=9)
 
-    ax.legend(title='Categorías', loc='upper right', fontsize=10)
+    # Si se quiere mostrar total de eventos, añadimos segundo eje Y
+    if show_total_eventos:
+        ax2 = ax.twinx()
+        color2 = '#480607'
+        ax2.set_ylabel('Total de Eventos', color=color2)
+        ax2.plot(cliente_summary.index, cliente_summary["num_eventos"], color=color2, marker='o', linestyle='--', linewidth=2, label="Total eventos")
+        ax2.tick_params(axis='y', labelcolor=color2)
+
+        # Etiquetas encima de puntos 
+        for i, val in enumerate(cliente_summary["num_eventos"]):
+            ax2.text(i, val + 0.5, f'{val}', ha='center', va='bottom', fontsize=9, color=color2)
+
+        # Combinar leyendas
+        lines_labels = ax.get_legend_handles_labels()
+        lines2, labels2 = ax2.get_legend_handles_labels()
+        lines_labels[0].extend(lines2)
+        lines_labels[1].extend(labels2)
+        ax.legend(lines_labels[0], lines_labels[1], loc='upper left')
+    else:
+        ax.legend(title='Categorías', loc='upper right', fontsize=10)
+
     plt.tight_layout()
     st.pyplot(fig)
 else:
