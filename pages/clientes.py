@@ -106,7 +106,74 @@ with col2:
     ax1.tick_params(axis='x', rotation=90)
     st.pyplot(fig2)
 
+st.divider()
 # # Segunda fila
+# Fila completa para el gráfico vertical por cliente
+st.markdown("### Cobros, Pagos y Margen por Cliente VSP")
+df_servicios["margen"] = df_servicios["cobros"] + df_servicios["pagos"]
+
+
+# --- Agrupar y preparar datos ---
+cliente_summary = df_servicios.groupby('cliente_vsp')[['cobros', 'pagos', 'margen']].sum()
+
+# Ordenar por margen descendente (de mayor a menor)
+cliente_summary = cliente_summary.sort_values(by='margen', ascending=False)
+
+# --- Checkboxes para seleccionar qué mostrar ---
+show_cobros = st.checkbox("Cobros", value=True)
+show_pagos = st.checkbox("Pagos", value=True)
+show_margen = st.checkbox("Margen", value=True)
+
+
+# --- Determinar columnas seleccionadas ---
+categorias = []
+colores = []
+if show_margen:
+    categorias.append('margen')
+    colores.append(vsp_palette[2])
+if show_cobros:
+    categorias.append('cobros')
+    colores.append(vsp_palette[0])
+if show_pagos:
+    categorias.append('pagos')
+    colores.append(vsp_palette[1])
+
+
+# --- Mostrar gráfico si hay algo seleccionado ---
+if categorias:
+    fig, ax = plt.subplots(figsize=(14, 6))  # Ancho grande para fila completa
+
+    cliente_summary[categorias].plot(
+        kind='bar',
+        stacked=True,
+        ax=ax,
+        color=colores,
+        width=0.6
+    )
+
+    ax.set_xlabel('Cliente VSP', fontsize=13)
+    ax.set_ylabel('Euros', fontsize=13)
+    ax.set_title('Cobros, Pagos y Margen por Cliente VSP', fontsize=16, pad=15)
+    ax.tick_params(axis='x', rotation=45, labelsize=11)
+    ax.tick_params(axis='y', labelsize=11)
+
+    # Añadir anotaciones solo para margen (si está seleccionado)
+    if show_margen:
+        for p in ax.patches:
+            if p.get_facecolor() == (0, 0, 0, 1):  # Negro = margen
+                height = p.get_height()
+                if height != 0:
+                    x = p.get_x() + p.get_width() / 2
+                    y = p.get_y() + height
+                    ax.text(x, y + 100, f'{height:,.0f} €', ha='center', va='bottom', fontsize=9)
+
+    ax.legend(title='Categorías', loc='upper right', fontsize=10)
+    plt.tight_layout()
+    st.pyplot(fig)
+else:
+    st.info("Selecciona al menos una categoría para mostrar el gráfico.")
+
+
 # col3, col4 = st.columns(2)
 
 # with col3:
