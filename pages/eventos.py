@@ -9,7 +9,7 @@ import random
 
 # --- CONFIGURACIÓN GENERAL ---
 st.set_page_config(
-    page_title="Servicios",
+    page_title="Eventos",
     page_icon="📊",
     layout="wide"
 )
@@ -48,83 +48,83 @@ cliente_seleccionado = st.sidebar.multiselect(
 )
 
 
-# Aplicar los filtros
-df_servicios = data_servicios_vsp[
-    (data_servicios_vsp['año'].isin(año_seleccionado))
-].copy()
+# # Aplicar los filtros
+# df_servicios = data_servicios_vsp[
+#     (data_servicios_vsp['año'].isin(año_seleccionado))
+# ].copy()
 
 
 
-# --- MAIN PAGE ---
+# # --- MAIN PAGE ---
 
-st.title("Overview de Clientes")
+# st.title("Overview de Eventos")
 
-# --- GRAFICAS ---
+# # --- GRAFICAS ---
 
 
-# Primer fila
-col1, col2 = st.columns(2)
+# # Primer fila
+# col1, col2 = st.columns(2)
 
-with col1:
-    st.markdown("### Eventos por Cliente VSP")
-    client_counts = df_servicios["cliente_vsp"].value_counts()
-    fig1, ax1 = plt.subplots(figsize=(8, 5))
-    sns.barplot(x=client_counts.index, y=client_counts.values, palette="viridis", ax=ax1)
-    ax1.set_title("Eventos / Actividades por Cliente VSP", fontsize=14)
-    ax1.set_xlabel("Cliente", fontsize=12)
-    ax1.set_ylabel("Eventos", fontsize=12)
-    ax1.tick_params(axis='x', rotation=45)
-    st.pyplot(fig1)
+# with col1:
+#     st.markdown("### Eventos por Cliente VSP")
+#     client_counts = df_servicios["cliente_vsp"].value_counts()
+#     fig1, ax1 = plt.subplots(figsize=(8, 5))
+#     sns.barplot(x=client_counts.index, y=client_counts.values, palette="viridis", ax=ax1)
+#     ax1.set_title("Eventos / Actividades por Cliente VSP", fontsize=14)
+#     ax1.set_xlabel("Cliente", fontsize=12)
+#     ax1.set_ylabel("Eventos", fontsize=12)
+#     ax1.tick_params(axis='x', rotation=45)
+#     st.pyplot(fig1)
 
-with col2:
-    st.markdown("### Ingresos vs Gastos Mensuales")
-    ingresos_gastos = df_servicios.groupby('mes_ano')[['pagos', 'cobros', 'margen']].sum()
-    ingresos_gastos.index = ingresos_gastos.index.to_timestamp()
-    meses = pd.date_range(f'{año_seleccionado[0]}-01-01', f'{año_seleccionado[0]}-12-01', freq='MS').month_name()
-    ingresos_gastos['month_name'] = ingresos_gastos.index.month_name()
-    ingresos_gastos = ingresos_gastos.set_index('month_name').reindex(meses, fill_value=0)
+# with col2:
+#     st.markdown("### Ingresos vs Gastos Mensuales")
+#     ingresos_gastos = df_servicios.groupby('mes_ano')[['pagos', 'cobros', 'margen']].sum()
+#     ingresos_gastos.index = ingresos_gastos.index.to_timestamp()
+#     meses = pd.date_range(f'{año_seleccionado[0]}-01-01', f'{año_seleccionado[0]}-12-01', freq='MS').month_name()
+#     ingresos_gastos['month_name'] = ingresos_gastos.index.month_name()
+#     ingresos_gastos = ingresos_gastos.set_index('month_name').reindex(meses, fill_value=0)
 
-    fig2, ax2 = plt.subplots(figsize=(8, 5))
-    sns.lineplot(data=ingresos_gastos, x=ingresos_gastos.index, y='cobros', label='Ingresos', marker='o', color='green', ax=ax2)
-    sns.lineplot(data=ingresos_gastos, x=ingresos_gastos.index, y='pagos', label='Gastos', marker='o', color='red', ax=ax2)
-    sns.lineplot(data=ingresos_gastos, x=ingresos_gastos.index, y='margen', label='Margen', marker='o', color='black', ax=ax2)
-    ax2.set_title('Ingresos vs Gastos', fontsize=14)
-    ax2.set_ylabel("Euros")
-    ax2.set_xlabel("Mes")
-    ax2.tick_params(axis='x', rotation=45)
-    ax2.legend()
-    st.pyplot(fig2)
+#     fig2, ax2 = plt.subplots(figsize=(8, 5))
+#     sns.lineplot(data=ingresos_gastos, x=ingresos_gastos.index, y='cobros', label='Ingresos', marker='o', color='green', ax=ax2)
+#     sns.lineplot(data=ingresos_gastos, x=ingresos_gastos.index, y='pagos', label='Gastos', marker='o', color='red', ax=ax2)
+#     sns.lineplot(data=ingresos_gastos, x=ingresos_gastos.index, y='margen', label='Margen', marker='o', color='black', ax=ax2)
+#     ax2.set_title('Ingresos vs Gastos', fontsize=14)
+#     ax2.set_ylabel("Euros")
+#     ax2.set_xlabel("Mes")
+#     ax2.tick_params(axis='x', rotation=45)
+#     ax2.legend()
+#     st.pyplot(fig2)
 
-# Segunda fila
-col3, col4 = st.columns(2)
+# # Segunda fila
+# col3, col4 = st.columns(2)
 
-with col3:
-    st.markdown("### Cobros, Pagos y Margen por Tipo de Actividad")
-    actividad_summary = df_servicios.groupby('tipo_actividad')[['cobros', 'pagos', 'margen']].sum().sort_values(by='margen')
-    fig3, ax3 = plt.subplots(figsize=(8, 6))
-    actividad_summary.plot(kind='barh', stacked=True, ax=ax3, color=['green', 'red', 'black'])
-    ax3.set_xlabel("Euros")
-    ax3.set_ylabel("Tipo de Actividad")
-    ax3.set_title("Por Tipo de Actividad")
-    st.pyplot(fig3)
+# with col3:
+#     st.markdown("### Cobros, Pagos y Margen por Tipo de Actividad")
+#     actividad_summary = df_servicios.groupby('tipo_actividad')[['cobros', 'pagos', 'margen']].sum().sort_values(by='margen')
+#     fig3, ax3 = plt.subplots(figsize=(8, 6))
+#     actividad_summary.plot(kind='barh', stacked=True, ax=ax3, color=['green', 'red', 'black'])
+#     ax3.set_xlabel("Euros")
+#     ax3.set_ylabel("Tipo de Actividad")
+#     ax3.set_title("Por Tipo de Actividad")
+#     st.pyplot(fig3)
 
-with col4:
-    st.markdown("### Margen Real vs Estimado")
-    if "margen_est_eur" in df_servicios.columns:
-        margen_comparacion = df_servicios.groupby('tipo_actividad')[['margen', 'margen_est_eur']].sum().sort_values(by='margen')
-        fig4, ax4 = plt.subplots(figsize=(8, 6))
-        y_pos = np.arange(len(margen_comparacion)) * 2
-        bar_width = 0.8
-        ax4.barh(y_pos - bar_width/2, margen_comparacion['margen'], bar_width, label='Margen Real', color='#1f77b4')
-        ax4.barh(y_pos + bar_width/2, margen_comparacion['margen_est_eur'], bar_width, label='Margen Estimado', color='#ff7f0e')
-        ax4.set_yticks(y_pos)
-        ax4.set_yticklabels(margen_comparacion.index)
-        ax4.set_xlabel("Euros")
-        ax4.set_title("Margen Real vs Estimado")
-        ax4.legend()
-        st.pyplot(fig4)
-    else:
-        st.info("No hay datos de margen estimado disponibles.")
+# with col4:
+#     st.markdown("### Margen Real vs Estimado")
+#     if "margen_est_eur" in df_servicios.columns:
+#         margen_comparacion = df_servicios.groupby('tipo_actividad')[['margen', 'margen_est_eur']].sum().sort_values(by='margen')
+#         fig4, ax4 = plt.subplots(figsize=(8, 6))
+#         y_pos = np.arange(len(margen_comparacion)) * 2
+#         bar_width = 0.8
+#         ax4.barh(y_pos - bar_width/2, margen_comparacion['margen'], bar_width, label='Margen Real', color='#1f77b4')
+#         ax4.barh(y_pos + bar_width/2, margen_comparacion['margen_est_eur'], bar_width, label='Margen Estimado', color='#ff7f0e')
+#         ax4.set_yticks(y_pos)
+#         ax4.set_yticklabels(margen_comparacion.index)
+#         ax4.set_xlabel("Euros")
+#         ax4.set_title("Margen Real vs Estimado")
+#         ax4.legend()
+#         st.pyplot(fig4)
+#     else:
+#         st.info("No hay datos de margen estimado disponibles.")
 
 
 # Always start fresh: convert and filter first

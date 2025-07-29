@@ -9,7 +9,7 @@ import random
 
 # --- CONFIGURACIÓN GENERAL ---
 st.set_page_config(
-    page_title="Servicios",
+    page_title="Clientes",
     page_icon="📊",
     layout="wide"
 )
