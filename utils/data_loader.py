@@ -101,7 +101,7 @@ def load_service_data(sheet_name: str, worksheet_name: str) -> pd.DataFrame:
     data_servicios_vsp = data_servicios_vsp[['tipo actividad', 'fecha evento', 'cliente vsp', 'cliente final', 
     'lugar evento',  'pax', '€ pax', 'ingreso est. €', 'gasto est. €',
        'margen est. €', 'cobros', 'pagos', 'margen (g)',
-       'esfuerzo', 'actividad']]
+       'esfuerzo', 'actividad', 'mes', 'año' ]]
     
     data_servicios_vsp.columns = data_servicios_vsp.columns.str.replace("€", "eur")
     data_servicios_vsp.columns = data_servicios_vsp.columns.str.replace(".", "")
