@@ -107,7 +107,7 @@ with col2:
     st.pyplot(fig2)
 
 st.divider()
-# # Segunda fila
+# # Segunda fila as
 # Fila completa para el gráfico vertical por cliente
 st.markdown("### Cobros, Pagos y Margen por Cliente VSP")
 df_servicios["margen"] = df_servicios["cobros"] + df_servicios["pagos"]
