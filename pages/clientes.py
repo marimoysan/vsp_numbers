@@ -106,36 +106,36 @@ with col2:
     ax1.tick_params(axis='x', rotation=90)
     st.pyplot(fig2)
 
-# Segunda fila
-col3, col4 = st.columns(2)
+# # Segunda fila
+# col3, col4 = st.columns(2)
 
-with col3:
-    st.markdown("### Cobros, Pagos y Margen por Tipo de Actividad")
-    actividad_summary = df_servicios.groupby('tipo_actividad')[['cobros', 'pagos', 'margen']].sum().sort_values(by='margen')
-    fig3, ax3 = plt.subplots(figsize=(8, 6))
-    actividad_summary.plot(kind='barh', stacked=True, ax=ax3, color=['green', 'red', 'black'])
-    ax3.set_xlabel("Euros")
-    ax3.set_ylabel("Tipo de Actividad")
-    ax3.set_title("Por Tipo de Actividad")
-    st.pyplot(fig3)
+# with col3:
+#     st.markdown("### Cobros, Pagos y Margen por Tipo de Actividad")
+#     actividad_summary = df_servicios.groupby('tipo_actividad')[['cobros', 'pagos', 'margen']].sum().sort_values(by='margen')
+#     fig3, ax3 = plt.subplots(figsize=(8, 6))
+#     actividad_summary.plot(kind='barh', stacked=True, ax=ax3, color=['green', 'red', 'black'])
+#     ax3.set_xlabel("Euros")
+#     ax3.set_ylabel("Tipo de Actividad")
+#     ax3.set_title("Por Tipo de Actividad")
+#     st.pyplot(fig3)
 
-with col4:
-    st.markdown("### Margen Real vs Estimado")
-    if "margen_est_eur" in df_servicios.columns:
-        margen_comparacion = df_servicios.groupby('tipo_actividad')[['margen', 'margen_est_eur']].sum().sort_values(by='margen')
-        fig4, ax4 = plt.subplots(figsize=(8, 6))
-        y_pos = np.arange(len(margen_comparacion)) * 2
-        bar_width = 0.8
-        ax4.barh(y_pos - bar_width/2, margen_comparacion['margen'], bar_width, label='Margen Real', color='#1f77b4')
-        ax4.barh(y_pos + bar_width/2, margen_comparacion['margen_est_eur'], bar_width, label='Margen Estimado', color='#ff7f0e')
-        ax4.set_yticks(y_pos)
-        ax4.set_yticklabels(margen_comparacion.index)
-        ax4.set_xlabel("Euros")
-        ax4.set_title("Margen Real vs Estimado")
-        ax4.legend()
-        st.pyplot(fig4)
-    else:
-        st.info("No hay datos de margen estimado disponibles.")
+# with col4:
+#     st.markdown("### Margen Real vs Estimado")
+#     if "margen_est_eur" in df_servicios.columns:
+#         margen_comparacion = df_servicios.groupby('tipo_actividad')[['margen', 'margen_est_eur']].sum().sort_values(by='margen')
+#         fig4, ax4 = plt.subplots(figsize=(8, 6))
+#         y_pos = np.arange(len(margen_comparacion)) * 2
+#         bar_width = 0.8
+#         ax4.barh(y_pos - bar_width/2, margen_comparacion['margen'], bar_width, label='Margen Real', color='#1f77b4')
+#         ax4.barh(y_pos + bar_width/2, margen_comparacion['margen_est_eur'], bar_width, label='Margen Estimado', color='#ff7f0e')
+#         ax4.set_yticks(y_pos)
+#         ax4.set_yticklabels(margen_comparacion.index)
+#         ax4.set_xlabel("Euros")
+#         ax4.set_title("Margen Real vs Estimado")
+#         ax4.legend()
+#         st.pyplot(fig4)
+#     else:
+#         st.info("No hay datos de margen estimado disponibles.")
 
 
 # Always start fresh: convert and filter first
