@@ -155,19 +155,19 @@ fig.add_trace(
     )
 )
 
-# 2) Segundo texto: total actividades, más separado y en rojo
-fig.add_trace(
-    go.Scatter(
-        x=margen_vals + offset,                      # más separación respecto a la etiqueta de margen
-        y=y_vals,
-        mode='text',
-        text=[f"({t})" for t in total_vals],
-        textposition='middle right',
-        textfont=dict(color=vsp_palette[1], size=14),         # rojo + tamaño más grande
-        showlegend=False,
-        hoverinfo='skip'
-    )
-)
+# # 2) Segundo texto: total actividades, más separado y en rojo
+# fig.add_trace(
+#     go.Scatter(
+#         x=margen_vals + offset,                      # más separación respecto a la etiqueta de margen
+#         y=y_vals,
+#         mode='text',
+#         text=[f"({t})" for t in total_vals],
+#         textposition='middle right',
+#         textfont=dict(color=vsp_palette[1], size=14),         # rojo + tamaño más grande
+#         showlegend=False,
+#         hoverinfo='skip'
+#     )
+# )
 
 fig.update_layout(
     height=max(400, 30 * len(resumen_plot)),
