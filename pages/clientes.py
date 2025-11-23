@@ -84,23 +84,77 @@ with col4:
 # Primer fila
 col1, col2 = st.columns(2)
 
+# with col1:
+#     st.markdown("### Eventos por Cliente VSP")
+#     client_counts = df_servicios["cliente_vsp"].value_counts()
+#     fig1, ax1 = plt.subplots(figsize=(8, 5))
+#     sns.barplot(x=client_counts.index, y=client_counts.values, color=vsp_palette[0], ax=ax1)
+#     ax1.set_title("Eventos / Actividades por Cliente VSP", fontsize=14)
+#     ax1.set_xlabel("Cliente", fontsize=12)
+#     ax1.set_ylabel("Eventos", fontsize=12)
+#     ax1.tick_params(axis='x', rotation=90)
+#     st.pyplot(fig1)
+
 with col1:
     st.markdown("### Eventos por Cliente VSP")
     client_counts = df_servicios["cliente_vsp"].value_counts()
+    total = client_counts.sum()
+
     fig1, ax1 = plt.subplots(figsize=(8, 5))
     sns.barplot(x=client_counts.index, y=client_counts.values, color=vsp_palette[0], ax=ax1)
+
+    # Añadir porcentajes encima de cada barra
+    for i, value in enumerate(client_counts.values):
+        percentage = value / total * 100
+        ax1.text(
+            i, 
+            value + (total * 0.01),   # un pequeño desplazamiento
+            f"{percentage:.1f}%", 
+            ha='center', 
+            va='bottom',
+            fontsize=10,
+            rotation = 90
+        )
+
     ax1.set_title("Eventos / Actividades por Cliente VSP", fontsize=14)
     ax1.set_xlabel("Cliente", fontsize=12)
     ax1.set_ylabel("Eventos", fontsize=12)
     ax1.tick_params(axis='x', rotation=90)
     st.pyplot(fig1)
 
+# with col2:
+#     st.markdown("### Eventos por Cliente Final")
+#     client_counts = df_servicios["cliente_final"].value_counts()
+#     fig2, ax1 = plt.subplots(figsize=(8, 5))
+#     sns.barplot(x=client_counts.index, y=client_counts.values, color=vsp_palette[0], ax=ax1)
+#     ax1.set_title("Eventos / Actividades por Cliente final", fontsize=14)
+#     ax1.set_xlabel("Cliente", fontsize=12)
+#     ax1.set_ylabel("Eventos", fontsize=12)
+#     ax1.tick_params(axis='x', rotation=90)
+#     st.pyplot(fig2)
+
 with col2:
     st.markdown("### Eventos por Cliente Final")
     client_counts = df_servicios["cliente_final"].value_counts()
-    fig2, ax1 = plt.subplots(figsize=(8, 5))
+    total = client_counts.sum()
+
+    fig2, ax1 = plt.subplots(figsize=(8, 3.5))
     sns.barplot(x=client_counts.index, y=client_counts.values, color=vsp_palette[0], ax=ax1)
-    ax1.set_title("Eventos / Actividades por Cliente final", fontsize=14)
+
+    # Añadir porcentajes encima de cada barra
+    for i, value in enumerate(client_counts.values):
+        percentage = value / total * 100
+        ax1.text(
+            i, 
+            value + (total * 0.005),   # un pequeño desplazamiento
+            f"{percentage:.1f}%", 
+            ha='center', 
+            va='bottom',
+            fontsize=10,
+            rotation = 90
+        )
+
+    ax1.set_title("Eventos / Actividades por Cliente Final", fontsize=14)
     ax1.set_xlabel("Cliente", fontsize=12)
     ax1.set_ylabel("Eventos", fontsize=12)
     ax1.tick_params(axis='x', rotation=90)

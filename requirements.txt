@@ -9,4 +9,5 @@ pmdarima==2.0.3
 streamlit
 gspread
 google-auth
+plotly
 

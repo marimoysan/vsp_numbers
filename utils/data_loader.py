@@ -113,8 +113,9 @@ def load_service_data(sheet_name: str, worksheet_name: str) -> pd.DataFrame:
     data_servicios_vsp['fecha_evento'] = pd.to_datetime(data_servicios_vsp['fecha_evento'], format='%Y-%m-%d', errors='coerce') 
 
     # Eliminar el símbolo " €" y convertir los valores a tipo float
-    data_servicios_vsp[['eur_pax','ingreso_est_eur', 'gasto_est_eur', 'margen_est_eur', 'cobros', 'pagos', 'margen']] = \
-    data_servicios_vsp[['eur_pax', 'ingreso_est_eur', 'gasto_est_eur', 'margen_est_eur', 'cobros', 'pagos', 'margen']].replace(" €", "", regex=True)
+    data_servicios_vsp[['eur_pax','ingreso_est_eur', 'gasto_est_eur', 'margen_est_eur', 'cobros', 'pagos']] = \
+    data_servicios_vsp[['eur_pax', 'ingreso_est_eur', 'gasto_est_eur', 'margen_est_eur', 'cobros', 'pagos']].replace(" €", "", regex=True)
+    data_servicios_vsp[["margen"]] = data_servicios_vsp[['margen']].replace("€", "", regex=True)
 
     # Convertir las columnas a tipo string antes de aplicar el reemplazo
     data_servicios_vsp[['eur_pax','ingreso_est_eur', 'gasto_est_eur', 'margen_est_eur', 'cobros', 'pagos', 'margen']] = \

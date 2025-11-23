@@ -1,15 +1,17 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 import seaborn as sns
 from utils.data_loader import load_service_data
+import plotly.graph_objects as go
 from vsp_palette import vsp_palette
 import time
 import random
 
 # --- CONFIGURACIÓN GENERAL ---
 st.set_page_config(
-    page_title="Eventos",
+    page_title="Servicios",
     page_icon="📊",
     layout="wide"
 )
@@ -23,7 +25,7 @@ orden_meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
 success_placeholder = st.empty()
 with st.spinner("Cargando muchos meses de curro..."):
     data_servicios_vsp = load_service_data(sheet_name="Planning_Tracker_VSP", worksheet_name="Eventos")
-success_placeholder.success("Aquí estan todos los eventos!")
+success_placeholder.success("Aquí estan todos los eventos y actividades!")
 time.sleep(3)
 success_placeholder.empty()
 
@@ -48,22 +50,145 @@ cliente_seleccionado = st.sidebar.multiselect(
 )
 
 
-# # Aplicar los filtros
-# df_servicios = data_servicios_vsp[
-#     (data_servicios_vsp['año'].isin(año_seleccionado))
-# ].copy()
+# Aplicar los filtros
+df_servicios = data_servicios_vsp[
+    (data_servicios_vsp['año'].isin(año_seleccionado))
+].copy()
+
+# Definir DF actividades y eventos
+data_actividades_vsp = data_servicios_vsp[data_servicios_vsp["tipo_actividad"] == "Actividad"]
+data_eventos_vsp = data_servicios_vsp[data_servicios_vsp["tipo_actividad"] == "Evento"]
+
+
+# --- MAIN PAGE ---
+
+st.title("Overview de Servicios")
+
+# st.dataframe(data_servicios_vsp)
+
+# --- GRAFICAS ---
+
+# --- MÉTRICAS PRINCIPALES ---
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+    st.metric("Total Actividades", value=(df_servicios["tipo_actividad"] == "Actividad").sum())
+
+with col2:
+    st.metric("Total Eventos", value=(df_servicios["tipo_actividad"] == "Evento").sum())
+
+with col3:
+    st.metric("Margen Total Actividades", value=f"{data_actividades_vsp['margen'].sum():.2f} €")
+
+with col4:
+    st.metric("Margen Total Eventos", value=f"{data_eventos_vsp['margen'].sum():.2f} €")
+
+
+# --- MÉTRICAS SECUNDARIAS ---
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+    st.metric("Margen Medio por Actividad", value=f"{data_actividades_vsp['margen'].mean():.2f} €")
+
+with col2:
+    st.metric("Margen Medio por Evento", value=f"{data_eventos_vsp['margen'].mean():.2f} €")
+
+with col3:
+    st.text(" ")
+
+with col4:
+    st.text(" ")
+
+
+st.divider()
+
+# --- Resumen de Actividades ---
+resumen_actividades = (
+    data_actividades_vsp
+        .groupby('actividad')
+        .agg(total=("actividad","count"), margen=("margen","mean"))
+        .round(2)
+)
+st.markdown("### Margen promedio por actividad")
+
+# Toggle de orden
+orden = st.radio(
+    "Ordenar por:",
+    options=["Margen promedio", "Total actividades"],
+    index=0,
+    horizontal=True
+)
+
+if orden.startswith("Margen"):
+    resumen_plot = resumen_actividades.sort_values(by="margen", ascending=True)
+else:
+    resumen_plot = resumen_actividades.sort_values(by="total", ascending=True)
+
+# Datos base
+y_vals = resumen_plot.index
+margen_vals = resumen_plot["margen"]
+total_vals = resumen_plot["total"]
+
+# --- FIGURA PLOTLY ---
+fig = go.Figure()
+
+max_margen = margen_vals.max()
+offset = max_margen * 0.15   # espacio extra para la etiqueta de cuenta
+
+# 1) Barras de margen con texto de margen
+fig.add_trace(
+    go.Bar(
+        x=margen_vals,
+        y=y_vals,
+        orientation='h',
+        name='Margen promedio',
+        marker_color=vsp_palette[0],
+        text=[f"{v:,.0f} €" for v in margen_vals],   # etiqueta 1: margen
+        textposition='outside',
+        textfont=dict(size=14),                      # fuente más grande
+        hovertemplate=(
+            "<b>%{y}</b><br>" +
+            "Margen promedio: %{x:.2f} €<br>" +
+            "Total actividades: %{customdata[0]}<extra></extra>"
+        ),
+        customdata=np.stack([total_vals], axis=-1)
+    )
+)
+
+# 2) Segundo texto: total actividades, más separado y en rojo
+fig.add_trace(
+    go.Scatter(
+        x=margen_vals + offset,                      # más separación respecto a la etiqueta de margen
+        y=y_vals,
+        mode='text',
+        text=[f"({t})" for t in total_vals],
+        textposition='middle right',
+        textfont=dict(color=vsp_palette[1], size=14),         # rojo + tamaño más grande
+        showlegend=False,
+        hoverinfo='skip'
+    )
+)
+
+fig.update_layout(
+    height=max(400, 30 * len(resumen_plot)),
+    xaxis_title="Euros",
+    yaxis_title="Actividad",
+    font=dict(size=16),  # tamaño base de fuente en todo el gráfico
+    yaxis=dict(
+        tickfont=dict(size=16)
+    ),
+    xaxis=dict(
+        showgrid=True,
+        tickfont=dict(size=18),
+        title_font=dict(size=18)
+    ),
+    bargap=0.3,
+)
+
+st.plotly_chart(fig, use_container_width=True)
 
 
 
-# # --- MAIN PAGE ---
-
-# st.title("Overview de Eventos")
-
-# # --- GRAFICAS ---
-
-
-# # Primer fila
-# col1, col2 = st.columns(2)
 
 # with col1:
 #     st.markdown("### Eventos por Cliente VSP")
@@ -127,7 +252,7 @@ cliente_seleccionado = st.sidebar.multiselect(
 #         st.info("No hay datos de margen estimado disponibles.")
 
 
-# Always start fresh: convert and filter first
+# # Always start fresh: convert and filter first
 # data_servicios_vsp['fecha'] = pd.to_datetime(data_servicios_vsp['fecha'], format='%d/%m/%Y')
 # data_filtrada = data_servicios_vsp[data_servicios_vsp['fecha'] >= pd.Timestamp('2023-09-01')]
 
@@ -138,13 +263,13 @@ cliente_seleccionado = st.sidebar.multiselect(
 #     .reset_index()
 # )
 
-# Step 1: Cumulative liquid account
+# # Step 1: Cumulative liquid account
 # saldo_inicial = 6701.61 + 2183.76  # banco sept 23 + diferencia por entradas manuales
 # saldo_total = balance_mensual['cantidad'].cumsum() + saldo_inicial
 # saldo_actual = saldo_total.iloc[-1]
 # fecha_actual = balance_mensual['fecha'].iloc[-1]
 
-# Step 2–3: Create matplotlib chart
+# # Step 2–3: Create matplotlib chart
 # fig, ax = plt.subplots(figsize=(14, 6))
 # bar_width = 25
 # colors = [vsp_palette[2] if val >= 0 else vsp_palette[1] for val in balance_mensual['cantidad']]
@@ -258,18 +383,18 @@ cliente_seleccionado = st.sidebar.multiselect(
 #     ax3.axis("equal")
 #     st.pyplot(fig3)
 
-# with col4:
-#     st.markdown("##### Gastos por categoría")
-#     fig4, ax4 = plt.subplots()
-#     ax4.pie(
-#         gastos_totales,
-#         labels=gastos_totales.index,
-#         autopct=lambda p: f'{p:.1f}%\n({p/100*sum(gastos_totales):,.0f} €)'.replace(',', 'X').replace('.', ',').replace('X', '.'),
-#         startangle=90,
-#         colors=sns.color_palette("Reds", len(gastos_totales))
-#     )
-#     ax4.axis("equal")
-#     st.pyplot(fig4)
+# # with col4:
+# #     st.markdown("##### Gastos por categoría")
+# #     fig4, ax4 = plt.subplots()
+# #     ax4.pie(
+# #         gastos_totales,
+# #         labels=gastos_totales.index,
+# #         autopct=lambda p: f'{p:.1f}%\n({p/100*sum(gastos_totales):,.0f} €)'.replace(',', 'X').replace('.', ',').replace('X', '.'),
+# #         startangle=90,
+# #         colors=sns.color_palette("Reds", len(gastos_totales))
+# #     )
+# #     ax4.axis("equal")
+# #     st.pyplot(fig4)
 
 # # Beneficio neto centrado
 # st.markdown("### 💰 Beneficio Neto Anual")
